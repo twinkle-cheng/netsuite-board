@@ -27,69 +27,60 @@
       display: flex;
       align-items: center;
       gap: 12px;
+      transition: background 0.3s;
     }
-    .status-banner.free { background: #EAF3DE; border-color: #C0DD97; }
-    .status-banner.busy { background: #FCEBEB; border-color: #F7C1C1; }
-    .status-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
-    .dot-free { background: #639922; }
-    .dot-busy { background: #E24B4A; }
+    .status-banner.free    { background: #EAF3DE; border-color: #C0DD97; }
+    .status-banner.busy    { background: #FCEBEB; border-color: #F7C1C1; }
+    .status-banner.loading { background: #f5f5f3; border-color: #d3d1c7; }
+    .status-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; transition: background 0.3s; }
+    .dot-free    { background: #639922; }
+    .dot-busy    { background: #E24B4A; }
+    .dot-loading { background: #b4b2a9; }
     .status-label { font-size: 15px; font-weight: 500; }
-    .status-label.free { color: #3B6D11; }
-    .status-label.busy { color: #A32D2D; }
+    .status-label.free    { color: #3B6D11; }
+    .status-label.busy    { color: #A32D2D; }
+    .status-label.loading { color: #888780; }
     .status-sub { font-size: 13px; color: #5F5E5A; margin-top: 2px; }
 
     .section-label {
-      font-size: 11px;
-      color: #888780;
+      font-size: 11px; color: #888780;
       margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      text-transform: uppercase; letter-spacing: 0.05em;
     }
     .user-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 8px;
-      margin-bottom: 1rem;
+      gap: 8px; margin-bottom: 1rem;
     }
     .user-btn {
       background: #fff;
       border: 0.5px solid #d3d1c7;
       border-radius: 8px;
       padding: 10px 12px;
-      cursor: pointer;
-      text-align: left;
+      cursor: pointer; text-align: left;
       transition: border-color 0.15s;
     }
     .user-btn:hover { border-color: #b4b2a9; }
     .user-btn.selected { border: 2px solid #185FA5; background: #E6F1FB; }
     .user-avatar {
-      width: 32px; height: 32px;
-      border-radius: 50%;
+      width: 32px; height: 32px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 500;
-      margin-bottom: 6px;
+      font-size: 12px; font-weight: 500; margin-bottom: 6px;
     }
     .user-name { font-size: 14px; font-weight: 500; color: #1a1a18; }
     .user-btn.selected .user-name { color: #0C447C; }
 
     .action-row { display: flex; gap: 8px; margin-bottom: 1rem; }
     .btn-checkin, .btn-checkout {
-      flex: 1;
-      border: none;
-      border-radius: 8px;
-      padding: 11px 20px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
+      flex: 1; border: none; border-radius: 8px;
+      padding: 11px 20px; font-size: 14px; font-weight: 500; cursor: pointer;
     }
     .btn-checkin { background: #639922; color: #EAF3DE; }
-    .btn-checkin:hover { background: #3B6D11; }
+    .btn-checkin:hover:not(:disabled) { background: #3B6D11; }
     .btn-checkout { background: #E24B4A; color: #FCEBEB; }
-    .btn-checkout:hover { background: #A32D2D; }
+    .btn-checkout:hover:not(:disabled) { background: #A32D2D; }
     .btn-checkin:disabled, .btn-checkout:disabled {
-      background: #e8e7e2;
-      color: #b4b2a9;
-      cursor: not-allowed;
+      background: #e8e7e2; color: #b4b2a9; cursor: not-allowed;
     }
 
     hr { border: none; border-top: 0.5px solid #d3d1c7; margin: 1rem 0; }
@@ -97,42 +88,35 @@
     .log-list { list-style: none; }
     .log-item {
       display: flex; align-items: center; gap: 10px;
-      padding: 8px 0;
-      border-bottom: 0.5px solid #e8e7e2;
-      font-size: 13px;
+      padding: 8px 0; border-bottom: 0.5px solid #e8e7e2; font-size: 13px;
     }
     .log-item:last-child { border-bottom: none; }
     .log-avatar {
-      width: 24px; height: 24px;
-      border-radius: 50%;
+      width: 24px; height: 24px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 10px; font-weight: 500;
-      flex-shrink: 0;
+      font-size: 10px; font-weight: 500; flex-shrink: 0;
     }
-    .log-badge {
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 99px;
-      font-weight: 500;
-    }
-    .badge-in { background: #EAF3DE; color: #3B6D11; }
+    .log-badge { font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 500; }
+    .badge-in  { background: #EAF3DE; color: #3B6D11; }
     .badge-out { background: #FCEBEB; color: #A32D2D; }
     .log-time { color: #888780; margin-left: auto; white-space: nowrap; }
     .log-name { color: #1a1a18; font-weight: 500; }
     .empty-log { font-size: 13px; color: #888780; padding: 8px 0; }
 
-    .refresh-hint { font-size: 11px; color: #b4b2a9; text-align: center; margin-top: 1rem; }
+    .sync-status { font-size: 11px; color: #b4b2a9; text-align: center; margin-top: 1rem; }
+    .sync-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #639922; margin-right: 4px; vertical-align: middle; }
+    .sync-dot.offline { background: #E24B4A; }
   </style>
 </head>
 <body>
 <div class="container">
   <h1>NetSuite 帳號佔用板</h1>
 
-  <div id="status-banner" class="status-banner free">
-    <div class="status-dot dot-free" id="status-dot"></div>
+  <div id="status-banner" class="status-banner loading">
+    <div class="status-dot dot-loading" id="status-dot"></div>
     <div>
-      <div class="status-label free" id="status-label">目前沒有人在使用</div>
-      <div class="status-sub" id="status-sub">可以安全登入 NetSuite</div>
+      <div class="status-label loading" id="status-label">連線中...</div>
+      <div class="status-sub" id="status-sub"></div>
     </div>
   </div>
 
@@ -147,13 +131,25 @@
   <hr>
   <div class="section-label">最近記錄</div>
   <ul class="log-list" id="log-list">
-    <li class="empty-log">尚無記錄</li>
+    <li class="empty-log">載入中...</li>
   </ul>
 
-  <p class="refresh-hint">每 10 秒自動更新 · 最後更新：<span id="last-refresh">—</span></p>
+  <p class="sync-status">
+    <span class="sync-dot" id="sync-dot"></span>
+    <span id="sync-text">即時同步中</span>
+  </p>
 </div>
 
-<script>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, onValue, set, push, query, orderByChild, limitToLast }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const app = initializeApp({
+  databaseURL: 'https://netsuite-board-default-rtdb.asia-southeast1.firebasedatabase.app'
+});
+const db = getDatabase(app);
+
 const USERS = [
   { id: 'u1', name: 'Tiffany Yang',  initials: 'TY', color: '#533AB7', bg: '#CECBF6' },
   { id: 'u2', name: 'Ruby Chiu',     initials: 'RC', color: '#993556', bg: '#F4C0D1' },
@@ -165,23 +161,9 @@ const USERS = [
   { id: 'u8', name: 'Twinkle Cheng', initials: 'TC', color: '#5F5E5A', bg: '#D3D1C7' },
 ];
 
-const KEY = 'ns_board_v1';
-let state = { occupiedBy: null, occupiedAt: null, logs: [] };
+let occupancy = { occupiedBy: null, occupiedAt: null };
+let logs = [];
 let selectedUser = null;
-
-function loadState() {
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (raw) state = JSON.parse(raw);
-    if (!state.logs) state.logs = [];
-  } catch(e) {}
-  render();
-  document.getElementById('last-refresh').textContent = new Date().toLocaleTimeString('zh-TW');
-}
-
-function saveState() {
-  localStorage.setItem(KEY, JSON.stringify(state));
-}
 
 function formatTime(ts) {
   const d = new Date(ts);
@@ -209,34 +191,35 @@ function render() {
   });
 
   const banner = document.getElementById('status-banner');
-  const dot = document.getElementById('status-dot');
-  const label = document.getElementById('status-label');
-  const sub = document.getElementById('status-sub');
+  const dot    = document.getElementById('status-dot');
+  const label  = document.getElementById('status-label');
+  const sub    = document.getElementById('status-sub');
 
-  if (state.occupiedBy) {
-    const u = USERS.find(x => x.id === state.occupiedBy);
+  if (occupancy.occupiedBy) {
+    const u = USERS.find(x => x.id === occupancy.occupiedBy);
     banner.className = 'status-banner busy';
-    dot.className = 'status-dot dot-busy';
-    label.className = 'status-label busy';
+    dot.className    = 'status-dot dot-busy';
+    label.className  = 'status-label busy';
     label.textContent = `${u ? u.name : '?'} 正在使用中`;
-    sub.textContent = state.occupiedAt ? `已使用 ${timeSince(state.occupiedAt)}，請等待登出再登入` : '';
+    sub.textContent   = occupancy.occupiedAt
+      ? `已使用 ${timeSince(occupancy.occupiedAt)}，請等待登出再登入` : '';
   } else {
     banner.className = 'status-banner free';
-    dot.className = 'status-dot dot-free';
-    label.className = 'status-label free';
+    dot.className    = 'status-dot dot-free';
+    label.className  = 'status-label free';
     label.textContent = '目前沒有人在使用';
-    sub.textContent = '可以安全登入 NetSuite';
+    sub.textContent   = '可以安全登入 NetSuite';
   }
 
-  const isMeIn = selectedUser && state.occupiedBy === selectedUser.id;
-  document.getElementById('btn-in').disabled = !selectedUser || !!state.occupiedBy;
+  const isMeIn = selectedUser && occupancy.occupiedBy === selectedUser.id;
+  document.getElementById('btn-in').disabled  = !selectedUser || !!occupancy.occupiedBy;
   document.getElementById('btn-out').disabled = !isMeIn;
 
   const logEl = document.getElementById('log-list');
-  if (!state.logs.length) {
+  if (!logs.length) {
     logEl.innerHTML = '<li class="empty-log">尚無記錄</li>';
   } else {
-    logEl.innerHTML = state.logs.slice().reverse().slice(0, 10).map(l => {
+    logEl.innerHTML = [...logs].reverse().slice(0, 10).map(l => {
       const u = USERS.find(x => x.id === l.userId);
       return `<li class="log-item">
         <div class="log-avatar" style="background:${u?.bg};color:${u?.color}">${u?.initials}</div>
@@ -248,26 +231,36 @@ function render() {
   }
 }
 
-function checkIn() {
-  if (!selectedUser || state.occupiedBy) return;
-  state.occupiedBy = selectedUser.id;
-  state.occupiedAt = Date.now();
-  state.logs.push({ userId: selectedUser.id, type: 'in', ts: Date.now() });
-  saveState();
-  render();
-}
+window.checkIn = async function() {
+  if (!selectedUser || occupancy.occupiedBy) return;
+  await set(ref(db, 'occupancy'), { occupiedBy: selectedUser.id, occupiedAt: Date.now() });
+  await push(ref(db, 'logs'), { userId: selectedUser.id, type: 'in', ts: Date.now() });
+};
 
-function checkOut() {
-  if (!selectedUser || state.occupiedBy !== selectedUser.id) return;
-  state.occupiedBy = null;
-  state.occupiedAt = null;
-  state.logs.push({ userId: selectedUser.id, type: 'out', ts: Date.now() });
-  saveState();
-  render();
-}
+window.checkOut = async function() {
+  if (!selectedUser || occupancy.occupiedBy !== selectedUser.id) return;
+  await set(ref(db, 'occupancy'), { occupiedBy: null, occupiedAt: null });
+  await push(ref(db, 'logs'), { userId: selectedUser.id, type: 'out', ts: Date.now() });
+};
 
-setInterval(loadState, 10000);
-loadState();
+onValue(ref(db, 'occupancy'), snap => {
+  occupancy = snap.val() || { occupiedBy: null, occupiedAt: null };
+  render();
+});
+
+onValue(query(ref(db, 'logs'), orderByChild('ts'), limitToLast(20)), snap => {
+  logs = [];
+  snap.forEach(child => logs.push(child.val()));
+  render();
+});
+
+onValue(ref(db, '.info/connected'), snap => {
+  const ok = snap.val();
+  document.getElementById('sync-dot').className = 'sync-dot' + (ok ? '' : ' offline');
+  document.getElementById('sync-text').textContent = ok ? '即時同步中' : '連線中斷，嘗試重連...';
+});
+
+render();
 </script>
 </body>
 </html>
