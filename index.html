@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NetSuite PM帳號佔用板</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: #f5f5f3;
@@ -16,8 +24,18 @@
       justify-content: center;
       padding: 2rem 1rem;
     }
-    .container { width: 100%; max-width: 560px; }
-    h1 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; color: #1a1a18; }
+
+    .container {
+      width: 100%;
+      max-width: 560px;
+    }
+
+    h1 {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 1.25rem;
+      color: #1a1a18;
+    }
 
     .status-banner {
       border-radius: 12px;
@@ -29,238 +47,413 @@
       gap: 12px;
       transition: background 0.3s;
     }
-    .status-banner.free    { background: #EAF3DE; border-color: #C0DD97; }
-    .status-banner.busy    { background: #FCEBEB; border-color: #F7C1C1; }
-    .status-banner.loading { background: #f5f5f3; border-color: #d3d1c7; }
-    .status-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; transition: background 0.3s; }
-    .dot-free    { background: #639922; }
-    .dot-busy    { background: #E24B4A; }
-    .dot-loading { background: #b4b2a9; }
-    .status-label { font-size: 15px; font-weight: 500; }
-    .status-label.free    { color: #3B6D11; }
-    .status-label.busy    { color: #A32D2D; }
-    .status-label.loading { color: #888780; }
-    .status-sub { font-size: 13px; color: #5F5E5A; margin-top: 2px; }
+
+    .status-banner.free {
+      background: #EAF3DE;
+      border-color: #C0DD97;
+    }
+
+    .status-banner.busy {
+      background: #FCEBEB;
+      border-color: #F7C1C1;
+    }
+
+    .status-banner.loading {
+      background: #f5f5f3;
+      border-color: #d3d1c7;
+    }
+
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      transition: background 0.3s;
+    }
+
+    .dot-free {
+      background: #639922;
+    }
+
+    .dot-busy {
+      background: #E24B4A;
+    }
+
+    .dot-loading {
+      background: #b4b2a9;
+    }
+
+    .status-label {
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .status-label.free {
+      color: #3B6D11;
+    }
+
+    .status-label.busy {
+      color: #A32D2D;
+    }
+
+    .status-label.loading {
+      color: #888780;
+    }
+
+    .status-sub {
+      font-size: 13px;
+      color: #5F5E5A;
+      margin-top: 2px;
+    }
 
     .section-label {
-      font-size: 11px; color: #888780;
+      font-size: 11px;
+      color: #888780;
       margin-bottom: 8px;
-      text-transform: uppercase; letter-spacing: 0.05em;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
+
     .user-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 8px; margin-bottom: 1rem;
+      gap: 8px;
+      margin-bottom: 1rem;
     }
+
     .user-btn {
       background: #fff;
       border: 0.5px solid #d3d1c7;
       border-radius: 8px;
       padding: 10px 12px;
-      cursor: pointer; text-align: left;
+      cursor: pointer;
+      text-align: left;
       transition: border-color 0.15s;
     }
-    .user-btn:hover { border-color: #b4b2a9; }
-    .user-btn.selected { border: 2px solid #185FA5; background: #E6F1FB; }
+
+    .user-btn:hover {
+      border-color: #b4b2a9;
+    }
+
+    .user-btn.selected {
+      border: 2px solid #185FA5;
+      background: #E6F1FB;
+    }
+
     .user-avatar {
-      width: 32px; height: 32px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 500; margin-bottom: 6px;
-    }
-    .user-name { font-size: 14px; font-weight: 500; color: #1a1a18; }
-    .user-btn.selected .user-name { color: #0C447C; }
-
-    .action-row { display: flex; gap: 8px; margin-bottom: 1rem; }
-    .btn-checkin, .btn-checkout {
-      flex: 1; border: none; border-radius: 8px;
-      padding: 11px 20px; font-size: 14px; font-weight: 500; cursor: pointer;
-    }
-    .btn-checkin { background: #639922; color: #EAF3DE; }
-    .btn-checkin:hover:not(:disabled) { background: #3B6D11; }
-    .btn-checkout { background: #E24B4A; color: #FCEBEB; }
-    .btn-checkout:hover:not(:disabled) { background: #A32D2D; }
-    .btn-checkin:disabled, .btn-checkout:disabled {
-      background: #e8e7e2; color: #b4b2a9; cursor: not-allowed;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 6px;
     }
 
-    hr { border: none; border-top: 0.5px solid #d3d1c7; margin: 1rem 0; }
+    .user-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #1a1a18;
+    }
 
-    .log-list { list-style: none; }
+    .user-btn.selected .user-name {
+      color: #0C447C;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .btn-checkin,
+    .btn-checkout {
+      flex: 1;
+      border: none;
+      border-radius: 8px;
+      padding: 11px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .btn-checkin {
+      background: #639922;
+      color: #EAF3DE;
+    }
+
+    .btn-checkin:hover:not(:disabled) {
+      background: #3B6D11;
+    }
+
+    .btn-checkout {
+      background: #E24B4A;
+      color: #FCEBEB;
+    }
+
+    .btn-checkout:hover:not(:disabled) {
+      background: #A32D2D;
+    }
+
+    .btn-checkin:disabled,
+    .btn-checkout:disabled {
+      background: #e8e7e2;
+      color: #b4b2a9;
+      cursor: not-allowed;
+    }
+
+    hr {
+      border: none;
+      border-top: 0.5px solid #d3d1c7;
+      margin: 1rem 0;
+    }
+
+    .log-list {
+      list-style: none;
+    }
+
     .log-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 8px 0; border-bottom: 0.5px solid #e8e7e2; font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 0.5px solid #e8e7e2;
+      font-size: 13px;
     }
-    .log-item:last-child { border-bottom: none; }
-    .log-avatar {
-      width: 24px; height: 24px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 10px; font-weight: 500; flex-shrink: 0;
-    }
-    .log-badge { font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 500; }
-    .badge-in  { background: #EAF3DE; color: #3B6D11; }
-    .badge-out { background: #FCEBEB; color: #A32D2D; }
-    .log-time { color: #888780; margin-left: auto; white-space: nowrap; }
-    .log-name { color: #1a1a18; font-weight: 500; }
-    .empty-log { font-size: 13px; color: #888780; padding: 8px 0; }
 
-    .sync-status { font-size: 11px; color: #b4b2a9; text-align: center; margin-top: 1rem; }
-    .sync-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #639922; margin-right: 4px; vertical-align: middle; }
-    .sync-dot.offline { background: #E24B4A; }
+    .log-item:last-child {
+      border-bottom: none;
+    }
+
+    .log-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    .log-badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-weight: 500;
+    }
+
+    .badge-in {
+      background: #EAF3DE;
+      color: #3B6D11;
+    }
+
+    .badge-out {
+      background: #FCEBEB;
+      color: #A32D2D;
+    }
+
+    .log-time {
+      color: #888780;
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    .log-name {
+      color: #1a1a18;
+      font-weight: 500;
+    }
+
+    .empty-log {
+      font-size: 13px;
+      color: #888780;
+      padding: 8px 0;
+    }
+
+    .sync-status {
+      font-size: 11px;
+      color: #b4b2a9;
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .sync-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #639922;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+
+    .sync-dot.offline {
+      background: #E24B4A;
+    }
   </style>
 </head>
+
 <body>
-<div class="container">
-  <h1>NetSuite PM帳號佔用板</h1>
+  <div class="container">
+    <h1>NetSuite PM帳號佔用板</h1>
 
-  <div id="status-banner" class="status-banner loading">
-    <div class="status-dot dot-loading" id="status-dot"></div>
-    <div>
-      <div class="status-label loading" id="status-label">連線中...</div>
-      <div class="status-sub" id="status-sub"></div>
+    <div id="status-banner" class="status-banner loading">
+      <div class="status-dot dot-loading" id="status-dot"></div>
+      <div>
+        <div class="status-label loading" id="status-label">連線中...</div>
+        <div class="status-sub" id="status-sub"></div>
+      </div>
     </div>
+
+    <div class="section-label">選擇你是誰</div>
+    <div class="user-grid" id="user-grid"></div>
+
+    <div class="action-row">
+      <button class="btn-checkin" id="btn-in" disabled onclick="checkIn()">我要登入了</button>
+      <button class="btn-checkout" id="btn-out" disabled onclick="checkOut()">我已登出了</button>
+    </div>
+
+    <hr>
+    <div class="section-label">最近記錄</div>
+    <ul class="log-list" id="log-list">
+      <li class="empty-log">載入中...</li>
+    </ul>
+
+    <p class="sync-status">
+      <span class="sync-dot" id="sync-dot"></span>
+      <span id="sync-text">即時同步中</span>
+    </p>
   </div>
 
-  <div class="section-label">選擇你是誰</div>
-  <div class="user-grid" id="user-grid"></div>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getDatabase, ref, onValue, set, push, query, orderByChild, limitToLast }
+      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
-  <div class="action-row">
-    <button class="btn-checkin" id="btn-in" disabled onclick="checkIn()">我要登入了</button>
-    <button class="btn-checkout" id="btn-out" disabled onclick="checkOut()">我已登出了</button>
-  </div>
+    const app = initializeApp({
+      databaseURL: 'https://netsuite-board-default-rtdb.asia-southeast1.firebasedatabase.app'
+    });
+    const db = getDatabase(app);
 
-  <hr>
-  <div class="section-label">最近記錄</div>
-  <ul class="log-list" id="log-list">
-    <li class="empty-log">載入中...</li>
-  </ul>
+    const USERS = [
+      { id: 'u1', name: 'Tiffany Yang', initials: 'TY', color: '#533AB7', bg: '#CECBF6' },
+      { id: 'u2', name: 'Ruby Chiu', initials: 'RC', color: '#993556', bg: '#F4C0D1' },
+      { id: 'u3', name: 'Talia Wang', initials: 'TW', color: '#185FA5', bg: '#B5D4F4' },
+      { id: 'u4', name: 'Kevin Tu', initials: 'KT', color: '#0F6E56', bg: '#9FE1CB' },
+      { id: 'u5', name: 'Eddie Lin', initials: 'EL', color: '#854F0B', bg: '#FAC775' },
+      { id: 'u6', name: 'Hans Chien', initials: 'HC', color: '#993C1D', bg: '#F5C4B3' },
+      { id: 'u7', name: 'Kevin Chiang', initials: 'KC', color: '#3B6D11', bg: '#C0DD97' },
+      { id: 'u8', name: 'Twinkle Cheng', initials: 'TC', color: '#5F5E5A', bg: '#D3D1C7' },
+    ];
 
-  <p class="sync-status">
-    <span class="sync-dot" id="sync-dot"></span>
-    <span id="sync-text">即時同步中</span>
-  </p>
-</div>
+    let occupancy = { occupiedBy: null, occupiedAt: null };
+    let logs = [];
+    let selectedUser = null;
 
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getDatabase, ref, onValue, set, push, query, orderByChild, limitToLast }
-  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+    function formatTime(ts) {
+      const d = new Date(ts);
+      return `${d.getMonth() + 1}/${d.getDate()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+    }
 
-const app = initializeApp({
-  databaseURL: 'https://netsuite-board-default-rtdb.asia-southeast1.firebasedatabase.app'
-});
-const db = getDatabase(app);
+    function timeSince(ts) {
+      const s = Math.floor((Date.now() - ts) / 1000);
+      if (s < 60) return `${s} 秒前`;
+      const m = Math.floor(s / 60);
+      if (m < 60) return `${m} 分鐘前`;
+      const h = Math.floor(m / 60);
+      return `${h} 小時 ${m % 60} 分前`;
+    }
 
-const USERS = [
-  { id: 'u1', name: 'Tiffany Yang',  initials: 'TY', color: '#533AB7', bg: '#CECBF6' },
-  { id: 'u2', name: 'Ruby Chiu',     initials: 'RC', color: '#993556', bg: '#F4C0D1' },
-  { id: 'u3', name: 'Talia Wang',    initials: 'TW', color: '#185FA5', bg: '#B5D4F4' },
-  { id: 'u4', name: 'Kevin Tu',      initials: 'KT', color: '#0F6E56', bg: '#9FE1CB' },
-  { id: 'u5', name: 'Eddie Lin',     initials: 'EL', color: '#854F0B', bg: '#FAC775' },
-  { id: 'u6', name: 'Hans Chien',    initials: 'HC', color: '#993C1D', bg: '#F5C4B3' },
-  { id: 'u7', name: 'Kevin Chiang',  initials: 'KC', color: '#3B6D11', bg: '#C0DD97' },
-  { id: 'u8', name: 'Twinkle Cheng', initials: 'TC', color: '#5F5E5A', bg: '#D3D1C7' },
-];
+    function render() {
+      const grid = document.getElementById('user-grid');
+      grid.innerHTML = '';
+      USERS.forEach(u => {
+        const btn = document.createElement('button');
+        btn.className = 'user-btn' + (selectedUser?.id === u.id ? ' selected' : '');
+        btn.innerHTML = `<div class="user-avatar" style="background:${u.bg};color:${u.color}">${u.initials}</div><div class="user-name">${u.name}</div>`;
+        btn.onclick = () => { selectedUser = u; render(); };
+        grid.appendChild(btn);
+      });
 
-let occupancy = { occupiedBy: null, occupiedAt: null };
-let logs = [];
-let selectedUser = null;
+      const banner = document.getElementById('status-banner');
+      const dot = document.getElementById('status-dot');
+      const label = document.getElementById('status-label');
+      const sub = document.getElementById('status-sub');
 
-function formatTime(ts) {
-  const d = new Date(ts);
-  return `${d.getMonth()+1}/${d.getDate()} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
-}
+      if (occupancy.occupiedBy) {
+        const u = USERS.find(x => x.id === occupancy.occupiedBy);
+        banner.className = 'status-banner busy';
+        dot.className = 'status-dot dot-busy';
+        label.className = 'status-label busy';
+        label.textContent = `${u ? u.name : '?'} 正在使用中`;
+        sub.textContent = occupancy.occupiedAt
+          ? `已使用 ${timeSince(occupancy.occupiedAt)}，請等待登出再登入` : '';
+      } else {
+        banner.className = 'status-banner free';
+        dot.className = 'status-dot dot-free';
+        label.className = 'status-label free';
+        label.textContent = '目前沒有人在使用';
+        sub.textContent = '可以安全登入 NetSuite';
+      }
 
-function timeSince(ts) {
-  const s = Math.floor((Date.now() - ts) / 1000);
-  if (s < 60) return `${s} 秒前`;
-  const m = Math.floor(s / 60);
-  if (m < 60) return `${m} 分鐘前`;
-  const h = Math.floor(m / 60);
-  return `${h} 小時 ${m % 60} 分前`;
-}
+      const isMeIn = selectedUser && occupancy.occupiedBy === selectedUser.id;
+      document.getElementById('btn-in').disabled = !selectedUser || !!occupancy.occupiedBy;
+      document.getElementById('btn-out').disabled = !isMeIn;
 
-function render() {
-  const grid = document.getElementById('user-grid');
-  grid.innerHTML = '';
-  USERS.forEach(u => {
-    const btn = document.createElement('button');
-    btn.className = 'user-btn' + (selectedUser?.id === u.id ? ' selected' : '');
-    btn.innerHTML = `<div class="user-avatar" style="background:${u.bg};color:${u.color}">${u.initials}</div><div class="user-name">${u.name}</div>`;
-    btn.onclick = () => { selectedUser = u; render(); };
-    grid.appendChild(btn);
-  });
-
-  const banner = document.getElementById('status-banner');
-  const dot    = document.getElementById('status-dot');
-  const label  = document.getElementById('status-label');
-  const sub    = document.getElementById('status-sub');
-
-  if (occupancy.occupiedBy) {
-    const u = USERS.find(x => x.id === occupancy.occupiedBy);
-    banner.className = 'status-banner busy';
-    dot.className    = 'status-dot dot-busy';
-    label.className  = 'status-label busy';
-    label.textContent = `${u ? u.name : '?'} 正在使用中`;
-    sub.textContent   = occupancy.occupiedAt
-      ? `已使用 ${timeSince(occupancy.occupiedAt)}，請等待登出再登入` : '';
-  } else {
-    banner.className = 'status-banner free';
-    dot.className    = 'status-dot dot-free';
-    label.className  = 'status-label free';
-    label.textContent = '目前沒有人在使用';
-    sub.textContent   = '可以安全登入 NetSuite';
-  }
-
-  const isMeIn = selectedUser && occupancy.occupiedBy === selectedUser.id;
-  document.getElementById('btn-in').disabled  = !selectedUser || !!occupancy.occupiedBy;
-  document.getElementById('btn-out').disabled = !isMeIn;
-
-  const logEl = document.getElementById('log-list');
-  if (!logs.length) {
-    logEl.innerHTML = '<li class="empty-log">尚無記錄</li>';
-  } else {
-    logEl.innerHTML = [...logs].reverse().slice(0, 10).map(l => {
-      const u = USERS.find(x => x.id === l.userId);
-      return `<li class="log-item">
+      const logEl = document.getElementById('log-list');
+      if (!logs.length) {
+        logEl.innerHTML = '<li class="empty-log">尚無記錄</li>';
+      } else {
+        logEl.innerHTML = [...logs].reverse().slice(0, 10).map(l => {
+          const u = USERS.find(x => x.id === l.userId);
+          return `<li class="log-item">
         <div class="log-avatar" style="background:${u?.bg};color:${u?.color}">${u?.initials}</div>
         <span class="log-name">${u?.name}</span>
         <span class="log-badge ${l.type === 'in' ? 'badge-in' : 'badge-out'}">${l.type === 'in' ? '登入' : '登出'}</span>
         <span class="log-time">${formatTime(l.ts)}</span>
       </li>`;
-    }).join('');
-  }
-}
+        }).join('');
+      }
+    }
 
-window.checkIn = async function() {
-  if (!selectedUser || occupancy.occupiedBy) return;
-  await set(ref(db, 'occupancy'), { occupiedBy: selectedUser.id, occupiedAt: Date.now() });
-  await push(ref(db, 'logs'), { userId: selectedUser.id, type: 'in', ts: Date.now() });
-};
+    window.checkIn = async function () {
+      if (!selectedUser || occupancy.occupiedBy) return;
+      await set(ref(db, 'occupancy'), { occupiedBy: selectedUser.id, occupiedAt: Date.now() });
+      await push(ref(db, 'logs'), { userId: selectedUser.id, type: 'in', ts: Date.now() });
+    };
 
-window.checkOut = async function() {
-  if (!selectedUser || occupancy.occupiedBy !== selectedUser.id) return;
-  await set(ref(db, 'occupancy'), { occupiedBy: null, occupiedAt: null });
-  await push(ref(db, 'logs'), { userId: selectedUser.id, type: 'out', ts: Date.now() });
-};
+    window.checkOut = async function () {
+      if (!selectedUser || occupancy.occupiedBy !== selectedUser.id) return;
+      await set(ref(db, 'occupancy'), { occupiedBy: null, occupiedAt: null });
+      await push(ref(db, 'logs'), { userId: selectedUser.id, type: 'out', ts: Date.now() });
+    };
 
-onValue(ref(db, 'occupancy'), snap => {
-  occupancy = snap.val() || { occupiedBy: null, occupiedAt: null };
-  render();
-});
+    onValue(ref(db, 'occupancy'), snap => {
+      occupancy = snap.val() || { occupiedBy: null, occupiedAt: null };
+      render();
+    });
 
-onValue(query(ref(db, 'logs'), orderByChild('ts'), limitToLast(20)), snap => {
-  logs = [];
-  snap.forEach(child => logs.push(child.val()));
-  render();
-});
+    onValue(query(ref(db, 'logs'), orderByChild('ts'), limitToLast(20)), snap => {
+      const newLogs = [];
+      snap.forEach(child => {
+        const val = child.val();
+        if (val && val.userId && val.type && val.ts) newLogs.push(val);
+      });
+      logs = newLogs;
+      render();
+    });
 
-onValue(ref(db, '.info/connected'), snap => {
-  const ok = snap.val();
-  document.getElementById('sync-dot').className = 'sync-dot' + (ok ? '' : ' offline');
-  document.getElementById('sync-text').textContent = ok ? '即時同步中' : '連線中斷，嘗試重連...';
-});
+    onValue(ref(db, '.info/connected'), snap => {
+      const ok = snap.val();
+      document.getElementById('sync-dot').className = 'sync-dot' + (ok ? '' : ' offline');
+      document.getElementById('sync-text').textContent = ok ? '即時同步中' : '連線中斷，嘗試重連...';
+    });
 
-render();
-</script>
+    render();
+  </script>
 </body>
+
 </html>
